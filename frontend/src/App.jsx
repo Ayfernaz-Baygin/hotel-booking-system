@@ -68,8 +68,8 @@ function App() {
   const [hotelForm, setHotelForm] = useState(emptyHotelForm);
   const [editingHotelId, setEditingHotelId] = useState("");
 
-  const API_BASE_URL = "http://localhost:8088";
-
+  const API_BASE_URL =
+  "http://api-gateway-lb-env-env.eba-qwz3nust.eu-north-1.elasticbeanstalk.com";
   const getAuthConfig = () => {
     return {
       headers: {
