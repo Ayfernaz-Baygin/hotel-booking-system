@@ -1,0 +1,81 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: hotel-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234567
+      MYSQL_DATABASE: hotel_booking_system
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  mongodb:
+    image: mongo:7
+    container_name: hotel-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7
+    container_name: redis-hotel
+    ports:
+      - "6379:6379"
+
+  hotel-service:
+    build: ./hotel-service
+    container_name: hotel-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+
+  comments-service:
+    build: ./comments-service
+    container_name: comments-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mongodb
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - hotel-service
+
+  ai-agent-service:
+    build: ./ai-agent-service
+    container_name: ai-agent-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - hotel-service
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8088:8088"
+    depends_on:
+      - hotel-service
+      - comments-service
+      - notification-service
+      - ai-agent-service
+
+  frontend:
+    build: ./frontend
+    container_name: hotel-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+
+volumes:
+  mysql_data:
+  mongo_data:
